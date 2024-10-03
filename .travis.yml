@@ -1,0 +1,32 @@
+sudo: required
+services:
+  - docker
+
+#before testing or deploying
+before_install:
+  - docker build -t beoboe/react-test -f Dockerfile.dev ./client
+
+# to run tests
+script:
+# the -e CI=true is to ensure that the run command return anything not just sleeping there
+# we could append -- --coverage
+  - docker run -e CI=true beoboe/docker-react npm run test
+
+#after success block; where we build prod images before deploy
+after_success:
+  - docker build -t beoboe/multi-client ./client
+  - docker build -t beoboe/multi-server ./server
+  - docker build -t beoboe/mutli-nginx ./nginx
+  - docker build -t beoboe/multi-worker ./worker
+
+deploy:
+  provider: "elasticbeanstalk"
+  region: "eu-north-1"
+  app: "frontend"
+  env: "Frontend-env"
+  bucket_name: "elasticbeanstalk-eu-north-1-021660495013"
+  bucket_path: "frontend"
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: "$AWS_SECRET_KEY"
