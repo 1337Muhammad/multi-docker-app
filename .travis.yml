@@ -12,12 +12,20 @@ script:
 # we could append -- --coverage
   - docker run -e CI=true beoboe/docker-react npm run test
 
-#after success block; where we build prod images before deploy
+# After success block; where we build prod images before deploy
 after_success:
   - docker build -t beoboe/multi-client ./client
   - docker build -t beoboe/multi-server ./server
   - docker build -t beoboe/mutli-nginx ./nginx
   - docker build -t beoboe/multi-worker ./worker
+
+# Login to Docker and then push created images - don't forget to adjust travis env variables on github/travis
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+# push to docker hub
+  - docker push beoboe/multi-client
+  - docker push beoboe/multi-server
+  - docker push beoboe/mutli-nginx
+  - docker push beoboe/multi-worker
 
 deploy:
   provider: "elasticbeanstalk"
