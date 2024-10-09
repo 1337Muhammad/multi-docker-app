@@ -14,9 +14,7 @@ jobs:
 
     services:
       docker:
-        name: docker
         options: --privileged
-        image: docker:stable
 
     steps:
       # Checkout the code
