@@ -12,10 +12,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    services:
-      docker:
-        options: --privileged
-
     steps:
       # Checkout the code
       - name: Checkout code
