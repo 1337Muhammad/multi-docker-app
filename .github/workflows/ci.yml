@@ -58,3 +58,17 @@ jobs:
           docker push beoboe/multi-server
           docker push beoboe/multi-nginx
           docker push beoboe/multi-worker
+
+      # Deploy to Elastic Beanstalk
+      - name: Deploy to Elastic Beanstalk
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
+          AWS_REGION: eu-north-1
+        run: |
+          zip -r app.zip .  # Zip the current directory
+          aws s3 cp app.zip s3://elasticbeanstalk-eu-north-1-021660495013/docker-multi/app.zip
+          aws elasticbeanstalk create-application-version --application-name multi-docker \
+            --version-label $(date +%s) --source-bundle S3Bucket=elasticbeanstalk-eu-north-1-021660495013,S3Key=docker-multi/app.zip
+          aws elasticbeanstalk update-environment --environment-name Mutli-docker-env \
+            --version-label $(date +%s)
