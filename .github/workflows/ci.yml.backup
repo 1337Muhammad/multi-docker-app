@@ -59,9 +59,8 @@ jobs:
           docker push beoboe/multi-nginx
           docker push beoboe/multi-worker
 
-
-      # Upload zipped application to S3
-      - name: Upload to S3
+      # Deploy to Elastic Beanstalk
+      - name: Deploy to Elastic Beanstalk
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
@@ -69,43 +68,7 @@ jobs:
         run: |
           zip -r app.zip .  # Zip the current directory
           aws s3 cp app.zip s3://elasticbeanstalk-eu-north-1-021660495013/docker-multi/app.zip
-
-
-      # Create a new application version in Elastic Beanstalk
-      - name: Create application version
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
-          AWS_REGION: eu-north-1
-          VERSION_LABEL: ${{ env.VERSION_LABEL }}
-        run: |
-          aws elasticbeanstalk create-application-version \
-            --application-name multi-docker \
-            --version-label $VERSION_LABEL \
-            --source-bundle S3Bucket=elasticbeanstalk-eu-north-1-021660495013,S3Key=docker-multi/app.zip
-
-      # Update Elastic Beanstalk environment with the new version
-      - name: Update Elastic Beanstalk environment
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
-          AWS_REGION: eu-north-1
-          VERSION_LABEL: ${{ env.VERSION_LABEL }}
-        run: |
-          aws elasticbeanstalk update-environment \
-            --environment-name Mutli-docker-env \
-            --version-label $VERSION_LABEL
-
-
-
-
-
-
-
-      #  run: |
-     #     zip -r app.zip .  # Zip the current directory
-    #      aws s3 cp app.zip s3://elasticbeanstalk-eu-north-1-021660495013/docker-multi/app.zip
-   #       aws elasticbeanstalk create-application-version --application-name multi-docker \
-  #          --version-label $(date +%s) --source-bundle S3Bucket=elasticbeanstalk-eu-north-1-021660495013,S3Key=docker-multi/app.zip
- #         aws elasticbeanstalk update-environment --environment-name Mutli-docker-env \
-#            --version-label $(date +%s)
+          aws elasticbeanstalk create-application-version --application-name multi-docker \
+            --version-label $(date +%s) --source-bundle S3Bucket=elasticbeanstalk-eu-north-1-021660495013,S3Key=docker-multi/app.zip
+          aws elasticbeanstalk update-environment --environment-name Mutli-docker-env \
+            --version-label $(date +%s)
