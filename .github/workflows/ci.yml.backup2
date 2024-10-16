@@ -40,7 +40,7 @@ jobs:
         id: version
         run: echo "VERSION_LABEL=$(date +%s)" >> $GITHUB_ENV
 
-      # Debugging step to ensure the version label is defined on GitHub successfully
+      #debuggin step to ensure the version label is defined on github successfully
       - name: Print version label
         run: echo "VERSION_LABEL is ${{ env.VERSION_LABEL }}"
 
@@ -68,6 +68,7 @@ jobs:
           docker push beoboe/multi-nginx
           docker push beoboe/multi-worker
 
+
       # Upload zipped application to S3
       - name: Upload to S3
         env:
@@ -77,6 +78,7 @@ jobs:
         run: |
           zip -r app.zip .  # Zip the current directory
           aws s3 cp app.zip s3://elasticbeanstalk-eu-north-1-021660495013/docker-multi/app.zip
+
 
       # Create a new application version in Elastic Beanstalk
       - name: Create application version
@@ -100,5 +102,5 @@ jobs:
           VERSION_LABEL: ${{ env.VERSION_LABEL }}
         run: |
           aws elasticbeanstalk update-environment \
-            --environment-name Multi-docker-env \
+            --environment-name Mutli-docker-env \
             --version-label $VERSION_LABEL
