@@ -40,6 +40,10 @@ jobs:
         id: version
         run: echo "VERSION_LABEL=$(date +%s)" >> $GITHUB_ENV
 
+      #debuggin step to ensure the version label is defined on github successfully
+      - name: Print version label
+        run: echo "VERSION_LABEL is ${{ env.VERSION_LABEL }}"
+
       # Checkout the code
       - name: Checkout code
         uses: actions/checkout@v3
