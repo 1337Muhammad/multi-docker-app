@@ -100,5 +100,5 @@ jobs:
           VERSION_LABEL: ${{ env.VERSION_LABEL }}
         run: |
           aws elasticbeanstalk update-environment \
-            --environment-name Multi-docker-env \
+            --environment-name Mutli-docker-env \
             --version-label $VERSION_LABEL
